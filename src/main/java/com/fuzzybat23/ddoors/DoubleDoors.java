@@ -2,13 +2,24 @@ package com.fuzzybat23.ddoors;
 
 
 import com.fuzzybat23.ddoors.proxy.CommonProxy;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import static com.fuzzybat23.ddoors.WoodenDoor.*;
 
 @net.minecraftforge.fml.common.Mod(modid = "ddoors", version = "1.0", clientSideOnly = true, acceptedMinecraftVersions = "[1.12, 1.13]" )
 public class DoubleDoors
@@ -18,6 +29,8 @@ public class DoubleDoors
 
     public static final String CLIENT_SIDE_PROXY = "com.fuzzybat23.ddoors.proxy.ClientProxy";
     public static final String CLIENT_SERVER_PROXY = "com.fuzzybat23.ddoors.proxy.ServerProxy";
+
+    public static final Logger logger = LogManager.getLogger();
 
     @Mod.Instance
     public static DoubleDoors instance;
@@ -41,5 +54,21 @@ public class DoubleDoors
 
         proxy.registerTickHandler();
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void onBlockInteract(PlayerInteractEvent.RightClickBlock event)
+    {
+        EntityPlayer player = event.getEntityPlayer();
+        BlockPos pos = event.getPos();
+        Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
+        IBlockState state = event.getWorld().getBlockState(pos);
+
+        logger.info("Begin check if it's a door...");
+        if( isWoodenDoor(block, state))
+        {
+            logger.info("state.getBlock() = " + state.getBlock().toString());
+            checkForDoors(event, block, pos);
+        }
     }
 }
