@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -63,12 +64,12 @@ public class DoubleDoors
         BlockPos pos = event.getPos();
         Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
         IBlockState state = event.getWorld().getBlockState(pos);
+        World world = event.getWorld();
 
-        logger.info("Begin check if it's a door...");
         if( isWoodenDoor(block, state))
         {
             logger.info("state.getBlock() = " + state.getBlock().toString());
-            checkForDoors(event, block, pos);
+            checkForDoors(world, state, pos);
         }
     }
 }
